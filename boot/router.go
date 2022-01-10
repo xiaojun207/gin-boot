@@ -26,8 +26,8 @@ type WebRouter struct {
 	Router *gin.RouterGroup
 }
 
-func (e *WebRouter) Group(relativePath string, handlers ...gin.HandlerFunc) WebRouter {
-	return WebRouter{Router: e.Router.Group(relativePath, handlers...)}
+func (e *WebRouter) Group(relativePath string, handlers ...gin.HandlerFunc) *WebRouter {
+	return &WebRouter{Router: e.Router.Group(relativePath, handlers...)}
 }
 
 func (e *WebRouter) Use(middleware ...gin.HandlerFunc) {
