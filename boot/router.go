@@ -63,7 +63,15 @@ func (e *WebRouter) OPTIONS(relativePath string, webHandlers ...WebHandlerFunc) 
 }
 
 func (e *WebRouter) Any(relativePath string, webHandlers ...WebHandlerFunc) {
-	e.route("Any", relativePath, webHandlers...)
+	e.route(http.MethodGet, relativePath, webHandlers)
+	e.route(http.MethodPost, relativePath, webHandlers)
+	e.route(http.MethodPut, relativePath, webHandlers)
+	e.route(http.MethodPatch, relativePath, webHandlers)
+	e.route(http.MethodHead, relativePath, webHandlers)
+	e.route(http.MethodOptions, relativePath, webHandlers)
+	e.route(http.MethodDelete, relativePath, webHandlers)
+	e.route(http.MethodConnect, relativePath, webHandlers)
+	e.route(http.MethodTrace, relativePath, webHandlers)
 }
 
 func (e *WebRouter) route(method, relativePath string, webHandlers ...WebHandlerFunc) {
