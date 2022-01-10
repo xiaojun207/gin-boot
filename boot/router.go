@@ -94,7 +94,7 @@ func baseFunc(c *gin.Context, webHandler WebHandlerFunc) {
 	funType := reflect.TypeOf(webHandler)
 	ginFunType := reflect.TypeOf(func(c *gin.Context) {})
 	if funType == ginFunType {
-		log.Println("baseFunc.funType.HandlerFunc:", funType)
+		//log.Println("baseFunc.funType.HandlerFunc:", funType)
 		webHandler.(func(*gin.Context))(c)
 		return
 	}

@@ -68,6 +68,8 @@ var webRouter = func(router *boot.WebRouter) {
 	router.POST("/testPost", AuthInterceptor, TestPost1Handler)
 	router.POST("/testPost2", TestPost2Handler)
 	router.GET("/testGet", AuthInterceptor, TestGet1Handler)
+	apiRouter := router.Group("/api/")
+	apiRouter.GET("/test", TestPost2Handler)
 }
 
 func main() {
