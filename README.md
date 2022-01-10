@@ -12,8 +12,8 @@
 package main
 
 import (
-	"github.com/xiaojun207/gin-boot/boot"
 	"github.com/gin-gonic/gin"
+	"github.com/xiaojun207/gin-boot/boot"
 	"log"
 	"net/http"
 )
@@ -26,7 +26,7 @@ type Foo struct {
 // 入参可以自动填充到结构体,如果是POST，则将http body数据填充到结构体；
 // 返回数据，可以是任意数据类型。如果数据不是boot.ApiResp，则返回数据会被包装为boot.ApiResp的json数据；<br>
 // 如果handler执行异常，请求返回会被包装为系统异常
-func TestPost1Handler(c *gin.Context, req *Foo)  boot.ApiResp {
+func TestPost1Handler(c *gin.Context, req *Foo) boot.ApiResp {
 	log.Println("TestPost1Handler.req:", req.Username)
 	return boot.ApiResp{
 		Code: "100200",
@@ -41,7 +41,7 @@ func TestPost2Handler(c *gin.Context, req *Foo) interface{} {
 }
 
 // 也可以使用gin方法, GET类型的请求，query参数也可以自动装填到结构体
-func TestGet1Handler(c *gin.Context, req *Foo)  interface{} {
+func TestGet1Handler(c *gin.Context, req *Foo) interface{} {
 	log.Println("TestGet1Handler.req.username:", req.Username)
 	log.Println("TestGet1Handler.req.password:", req.Password)
 	data := map[string]interface{}{
@@ -52,7 +52,6 @@ func TestGet1Handler(c *gin.Context, req *Foo)  interface{} {
 	}
 	return data
 }
-
 
 func AuthInterceptor(c *gin.Context) {
 	authorization := c.GetHeader("authorization")
@@ -69,7 +68,6 @@ func AuthInterceptor(c *gin.Context) {
 	c.Set("uid", id)
 }
 
-
 var webRouter = func(router *boot.WebRouter) {
 	//router.Use(AuthInterceptor)
 
@@ -81,6 +79,8 @@ var webRouter = func(router *boot.WebRouter) {
 	router.POST("/testPost", AuthInterceptor, TestPost1Handler)
 	router.POST("/testPost2", TestPost2Handler)
 	router.GET("/testGet", AuthInterceptor, TestGet1Handler)
+	apiRouter := router.Group("/api/")
+	apiRouter.GET("/test", TestPost2Handler)
 }
 
 func main() {
