@@ -28,7 +28,12 @@ func TestPost1Handler(c *gin.Context, req *Foo) boot.ApiResp {
 
 // 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
 func TestGetEmptyHandler(c *gin.Context, req *Foo) {
-	log.Println("TestGetHandler.req.username:", req.Username, ",password:", req.Password)
+	log.Println("TestGetEmptyHandler.req.username:", req.Username, ",password:", req.Password)
+}
+
+// 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
+func TestGetHandler(c *gin.Context) {
+	log.Println("TestGetHandler")
 }
 
 // 异常全局处理测试，返回：{"code":"100101","data":null,"msg":"TestPost2Handler.TestError"}
@@ -76,6 +81,7 @@ var webRouter = func(router *boot.WebRouter) {
 	router.POST("/testPost2", TestPost2Handler)
 	router.GET("/testGetEmpty", TestGetEmptyHandler)
 	router.GET("/testGet", AuthInterceptor, TestGet1Handler)
+	router.GET("/testGet2", TestGetHandler)
 
 	apiRouter := router.Group("/api/")
 	apiRouter.GET("/test", TestPost2Handler)

@@ -87,40 +87,42 @@ func router(router *gin.RouterGroup, method, relativePath string, webHandlers ..
 	handlers := make([]gin.HandlerFunc, len(webHandlers))
 	for i, webHandler := range webHandlers {
 		tmp := webHandler // 这里需要把webHandler赋值到临时变量，否则会被
+		lastHandler := i == len(webHandlers)-1
 		handlers[i] = func(c *gin.Context) {
 			// 这里只能用变量tmp，不能用webHandler
-			baseFunc(c, tmp)
+			baseFunc(c, tmp, lastHandler)
 		}
 	}
 	router.Handle(method, relativePath, handlers...)
 }
 
-func baseFunc(c *gin.Context, webHandler WebHandlerFunc) {
+func baseFunc(c *gin.Context, webHandler WebHandlerFunc, lastHandler bool) {
 	funType := reflect.TypeOf(webHandler)
 	ginFunType := reflect.TypeOf(func(c *gin.Context) {})
 	if funType == ginFunType {
-		//log.Println("baseFunc.funType.HandlerFunc:", funType)
 		webHandler.(func(*gin.Context))(c)
-		return
-	}
-	returnValues := AutoFillParams(c, webHandler)
-
-	if returnValues != nil && len(returnValues) > 0 {
-		r := returnValues[0].Interface()
-
-		rType := reflect.TypeOf(r)
-		if rType == WebErrorType {
-			res := r.(WebError)
-			Resp(c, res.Code(), res.Msg(), r)
-		} else if rType == ApiRespType {
-			c.JSON(http.StatusOK, r)
-		} else if rType == ErrorType {
-			Resp(c, "100100", "系统错误", r)
-		} else {
-			Resp(c, "100200", "成功", r)
-		}
 	} else {
-		Resp(c, "100200", "成功", nil)
+		returnValues := AutoFillParams(c, webHandler)
+
+		if returnValues != nil && len(returnValues) > 0 {
+			r := returnValues[0].Interface()
+
+			rType := reflect.TypeOf(r)
+			if rType == WebErrorType {
+				RespWebError(c, r.(WebError))
+			} else if rType == ApiRespType {
+				c.JSON(http.StatusOK, r)
+			} else if rType == ErrorType {
+				Resp(c, "100100", "系统错误", r)
+			} else {
+				RespSuccess(c, r)
+			}
+		}
+	}
+
+	// 如果最后一个handler结束，并且没有返回数据，则默认成功
+	if lastHandler && !c.Writer.Written() {
+		RespSuccess(c)
 	}
 }
 

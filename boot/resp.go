@@ -11,10 +11,22 @@ type ApiResp struct {
 	Data interface{} `json:"data"`
 }
 
+func RespWebError(c *gin.Context, err WebError) {
+	Resp(c, err.Code(), err.Msg(), "")
+}
+
 func Resp(c *gin.Context, code string, msg string, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  msg,
+		"data": data,
+	})
+}
+
+func RespSuccess(c *gin.Context, data ...interface{}) {
+	c.JSON(http.StatusOK, gin.H{
+		"code": "100200",
+		"msg":  "成功",
 		"data": data,
 	})
 }
