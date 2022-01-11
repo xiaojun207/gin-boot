@@ -7,12 +7,12 @@ import (
 )
 
 // recover错误，转string
-func errorToString(r interface{}) (string, string) {
+func errorToString(r interface{}) (code string, msg string) {
 	switch v := r.(type) {
-	case error:
-		return "100101", v.Error()
 	case WebError:
 		return v.Code(), v.Msg()
+	case error:
+		return "100101", v.Error()
 	default:
 		return "100101", r.(string)
 	}
