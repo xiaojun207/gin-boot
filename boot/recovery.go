@@ -3,17 +3,18 @@ package boot
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 	"runtime/debug"
 )
 
 // recover错误，转string
-func errorToString(r interface{}) string {
+func errorToString(r interface{}) (string, string) {
 	switch v := r.(type) {
 	case error:
-		return v.Error()
+		return "100101", v.Error()
+	case WebError:
+		return v.Code(), v.Msg()
 	default:
-		return r.(string)
+		return "100101", r.(string)
 	}
 }
 
@@ -26,14 +27,9 @@ func Recovery(c *gin.Context) {
 			if gin.Mode() == gin.DebugMode {
 				debug.PrintStack()
 			}
-			//封装通用json返回
-			//c.JSON(http.StatusOK, Result.Fail(errorToString(r)))
-			//Result.Fail不是本例的重点，因此用下面代码代替
-			c.JSON(http.StatusOK, gin.H{
-				"code": "100101",
-				"msg":  errorToString(r),
-				"data": nil,
-			})
+
+			code, msg := errorToString(r)
+			Resp(c, code, msg, "")
 			//终止后续接口调用，不加的话recover到异常后，还会继续执行接口里后续代码
 			c.Abort()
 		}
