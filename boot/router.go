@@ -20,6 +20,11 @@ var (
 	ErrorType         = reflect.TypeOf(errors.New(""))
 	GinContextType    = reflect.TypeOf(gin.Context{})
 	PtrGinContextType = reflect.TypeOf(&gin.Context{})
+	HeaderType        = reflect.TypeOf(http.Header{})
+	RequestType       = reflect.TypeOf(http.Request{})
+	PtrRequestType    = reflect.TypeOf(&http.Request{})
+	ResponseType      = reflect.TypeOf(http.Response{})
+	PtrResponseType   = reflect.TypeOf(&http.Response{})
 )
 
 type WebRouter struct {
@@ -156,12 +161,26 @@ func AutoFillParams(c *gin.Context, fun interface{}) []reflect.Value {
 	for i := 0; i < funType.NumIn(); i++ {
 		paramType := funType.In(i)
 		//log.Println(i, ",paramType:", paramType)
-
-		if paramType == GinContextType || paramType == PtrGinContextType {
+		if paramType == PtrGinContextType {
 			values[i] = reflect.ValueOf(c)
+		} else if paramType == GinContextType {
+			values[i] = reflect.ValueOf(*c)
+		} else if paramType == HeaderType {
+			values[i] = reflect.ValueOf(c.Request.Header)
+		} else if paramType == RequestType {
+			values[i] = reflect.ValueOf(*c.Request)
+		} else if paramType == PtrRequestType {
+			values[i] = reflect.ValueOf(c.Request)
+		} else if paramType == ResponseType {
+			values[i] = reflect.ValueOf(*c.Request.Response)
+		} else if paramType == PtrResponseType {
+			values[i] = reflect.ValueOf(c.Request.Response)
 		} else if paramType.Kind() == reflect.Struct || paramType.Kind() == reflect.Ptr {
 			loadBody()
-			pObj := utils.NewInterface(paramType, body)
+			err, pObj := utils.NewInterface(paramType, body)
+			if err != nil {
+				log.Println("AutoFillParams.err:", err)
+			}
 			values[i] = reflect.ValueOf(pObj)
 		} else if paramType.Kind() == reflect.String {
 			loadBody()

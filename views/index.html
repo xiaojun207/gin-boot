@@ -65,6 +65,9 @@
             console.log(r)
             out(r)
         }
+        if (method === 'GET') {
+            data = ''
+        }
 
         $.ajax({
             type: method,

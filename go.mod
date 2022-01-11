@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.7.7
-	github.com/xiaojun207/go-base-utils v0.1.6
+	github.com/xiaojun207/go-base-utils v0.1.7
 )
 
 require (
