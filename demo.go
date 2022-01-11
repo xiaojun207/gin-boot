@@ -13,8 +13,8 @@ type Foo struct {
 }
 
 type Page struct {
-	PageNum  string `json:"page_num"`
-	PageSize string `json:"page_size"`
+	PageNum  int `json:"page_num,string"`
+	PageSize int `json:"page_size,string"`
 }
 
 // 入参可以自动填充到结构体,如果是POST，则将http body数据填充到结构体；
