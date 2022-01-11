@@ -119,6 +119,8 @@ func baseFunc(c *gin.Context, webHandler WebHandlerFunc) {
 		} else {
 			Resp(c, "100200", "成功", r)
 		}
+	} else {
+		Resp(c, "100200", "成功", nil)
 	}
 }
 

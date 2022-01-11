@@ -23,7 +23,9 @@ func Recovery(c *gin.Context) {
 		if r := recover(); r != nil {
 			//打印错误堆栈信息
 			log.Printf("panic: %v\n", r)
-			debug.PrintStack()
+			if gin.Mode() == gin.DebugMode {
+				debug.PrintStack()
+			}
 			//封装通用json返回
 			//c.JSON(http.StatusOK, Result.Fail(errorToString(r)))
 			//Result.Fail不是本例的重点，因此用下面代码代替

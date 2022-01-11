@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/xiaojun207/gin-boot/boot"
 	"log"
@@ -22,16 +23,18 @@ type Page struct {
 // 如果handler执行异常，请求返回会被包装为系统异常
 func TestPost1Handler(c *gin.Context, req *Foo) boot.ApiResp {
 	log.Println("TestPost1Handler.req:", req.Username)
-	return boot.ApiResp{
-		Code: "100200",
-		Msg:  "Success",
-		Data: "TestData: " + req.Username,
-	}
+	return boot.ApiResp{Code: "100200", Msg: "Success", Data: "TestData: " + req.Username}
 }
 
-func TestPost2Handler(c *gin.Context, req *Foo) interface{} {
-	log.Println("TestPost2Handler.req:", req.Username)
-	return req
+// 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
+func TestGetEmptyHandler(c *gin.Context, req *Foo) {
+	log.Println("TestGetHandler.req.username:", req.Username, ",password:", req.Password)
+}
+
+// 异常全局处理测试，返回：{"code":"100101","data":null,"msg":"TestPost2Handler.TestError"}
+func TestPost2Handler(c *gin.Context, req *Foo) {
+	log.Println("TestPost2Handler.req.username:", req.Username, ",password:", req.Password)
+	panic(errors.New("TestPost2Handler.TestError"))
 }
 
 // /testGet?username=admin12&password=1234&page_num=1&page_size=10
@@ -40,9 +43,7 @@ func TestGet1Handler(c *gin.Context, req *Foo, page Page) interface{} {
 	log.Println("TestGet1Handler.req.username:", req.Username, ",password:", req.Password)
 	log.Println("TestGet1Handler.page.PageNum:", page.PageNum, ",PageSize:", page.PageSize)
 	data := map[string]interface{}{
-		"list": []*Foo{
-			req,
-		},
+		"list": []*Foo{req},
 		"page": page,
 	}
 	return data
@@ -73,7 +74,9 @@ var webRouter = func(router *boot.WebRouter) {
 	// 动态API
 	router.POST("/testPost", AuthInterceptor, TestPost1Handler)
 	router.POST("/testPost2", TestPost2Handler)
+	router.GET("/testGetEmpty", TestGetEmptyHandler)
 	router.GET("/testGet", AuthInterceptor, TestGet1Handler)
+
 	apiRouter := router.Group("/api/")
 	apiRouter.GET("/test", TestPost2Handler)
 }
