@@ -122,7 +122,7 @@ func baseFunc(c *gin.Context, webHandler WebHandlerFunc, lastHandler bool) {
 
 	// 如果最后一个handler结束，并且没有返回数据，则默认成功
 	if lastHandler && !c.Writer.Written() {
-		RespSuccess(c)
+		RespSuccess(c, nil)
 	}
 }
 
