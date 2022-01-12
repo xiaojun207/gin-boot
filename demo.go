@@ -19,14 +19,20 @@ type Page struct {
 	PageSize       int `json:"page_size" form:"page_size"` // url 中的参数，需要用tag 'form' 标识，才能自动绑定
 }
 
+type QueryHeader struct {
+	boot.BindHeader
+	Authorization string `header:"authorization"`
+}
+
 // /testPost
 // 入参可以自动填充到结构体,如果是POST，则将http body数据填充到结构体；
 // 返回数据，可以是任意数据类型。如果数据不是boot.ApiResp，则返回数据会被包装为boot.ApiResp的json数据；<br>
 // 如果handler执行异常，请求返回会被包装为系统异常
 // 参数page继承boot.BindQuery的结构体，绑定url参数
-func TestPost1Handler(c *gin.Context, req *Foo, page Page) boot.ApiResp {
+func TestPost1Handler(c *gin.Context, req *Foo, page Page, header QueryHeader) boot.ApiResp {
 	log.Println("TestPost1Handler.req:", req.Username, ",Password:", req.Password)
 	log.Println("TestPost1Handler.page.PageNum:", page.PageNum, ",PageSize:", page.PageSize)
+	log.Println("TestPost1Handler.Authorization:", header.Authorization)
 	return boot.ApiResp{Code: "100200", Msg: "Success", Data: "TestData: " + req.Username}
 }
 
