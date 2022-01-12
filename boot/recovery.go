@@ -2,6 +2,7 @@ package boot
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"log"
 	"runtime/debug"
 )
@@ -11,10 +12,12 @@ func errorToString(r interface{}) (code string, msg string) {
 	switch v := r.(type) {
 	case WebError:
 		return v.Code(), v.Msg()
-	case error:
+	case validator.ValidationErrors:
 		return "100101", v.Error()
+	case error:
+		return "100103", v.Error()
 	default:
-		return "100101", r.(string)
+		return "100103", r.(string)
 	}
 }
 
