@@ -142,16 +142,17 @@ func bindBody(typ reflect.Type, c *gin.Context) (error, interface{}) {
 
 func bindParam(typ reflect.Type, c *gin.Context) (error, interface{}) {
 	bind := func(pObj interface{}) error {
-		if c.Request.Method == http.MethodGet {
-			return c.ShouldBindQuery(pObj)
-		}
 		switch pObj.(type) {
 		case IBindHeader:
 			return c.ShouldBindHeader(pObj)
 		case IBindQuery:
 			return c.ShouldBindQuery(pObj)
 		default:
-			return c.ShouldBindBodyWith(pObj, binding.JSON)
+			if c.Request.Method == http.MethodGet {
+				return c.ShouldBindQuery(pObj)
+			} else {
+				return c.ShouldBindBodyWith(pObj, binding.JSON)
+			}
 		}
 	}
 
