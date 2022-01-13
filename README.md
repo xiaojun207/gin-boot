@@ -63,7 +63,9 @@ func TestGetEmptyHandler(c *gin.Context, req *Foo) {
 }
 
 // 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
-func TestGetHandler(c *gin.Context) {
+func TestGetHandler(c *gin.Context, page Page, header QueryHeader) {
+	log.Println("TestGetHandler.page.PageNum:", page.PageNum, ",PageSize:", page.PageSize)
+	log.Println("TestGetHandler.Authorization:", header.Authorization)
 	log.Println("TestGetHandler")
 }
 
@@ -113,8 +115,8 @@ var webRouter = func(router *boot.WebRouter) {
 	router.POST("/testPost", AuthInterceptor, TestPost1Handler)
 	router.POST("/testPost2", TestPost2Handler)
 	router.GET("/testGetEmpty", TestGetEmptyHandler)
-	router.GET("/testGet", AuthInterceptor, TestGet1Handler)
-	router.GET("/testGet2", TestGetHandler)
+	router.GET("/testGet", TestGetHandler)
+	router.GET("/testGet1", AuthInterceptor, TestGet1Handler)
 
 	apiRouter := router.Group("/api/")
 	apiRouter.GET("/test", TestPost2Handler)
