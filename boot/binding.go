@@ -1,77 +1,19 @@
 package boot
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"reflect"
 )
-
-type IBindQuery interface {
-	GetBindQueryValue() string
-}
-
-type BindQuery struct{}
-
-func (e BindQuery) GetBindQueryValue() string {
-	return ""
-}
-
-///////
-
-type IBindHeader interface {
-	GetBindHeaderValue() string
-}
-
-type BindHeader struct{}
-
-func (e BindHeader) GetBindHeaderValue() string {
-	return ""
-}
-
-///////
-
-type IBindCookie interface {
-	GetBindCookieValue() string
-}
-
-type BindCookie struct{}
-
-func (e BindHeader) GetBindCookieValue() string {
-	return ""
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-func QueryToJson(queryValues url.Values) (res []byte, err error) {
-	resMap := map[string]interface{}{}
-	for key, _ := range queryValues {
-		resMap[key] = queryValues.Get(key)
-	}
-	res, err = json.Marshal(resMap)
-	//log.Println("QueryToJson.res:", string(res))
-	return
-}
-
-///////
-func CookieToJson(request *http.Request) (res []byte, err error) {
-	resMap := map[string]interface{}{}
-	for _, c := range request.Cookies() {
-		resMap[c.Name] = c.Value
-	}
-	res, err = json.Marshal(resMap)
-	//log.Println("QueryToJson.res:", string(res))
-	return
-}
 
 // 获取数据
 func loadData(request *http.Request) (body []byte) {
 	var err error
 	if request.Method == "GET" {
-		body, err = QueryToJson(request.URL.Query())
+		body, err = queryToJson(request.URL.Query())
 	} else {
 		body, err = ioutil.ReadAll(request.Body)
 	}
@@ -95,7 +37,6 @@ func AutoFillParams(c *gin.Context, fun interface{}) []reflect.Value {
 
 	for i := 0; i < funType.NumIn(); i++ {
 		paramType := funType.In(i)
-		//log.Println(i, ",paramType:", paramType)
 		if paramType == PtrGinContextType {
 			values[i] = reflect.ValueOf(c)
 		} else if paramType == GinContextType {
@@ -127,26 +68,17 @@ func AutoFillParams(c *gin.Context, fun interface{}) []reflect.Value {
 	return values
 }
 
-func bindBody(typ reflect.Type, c *gin.Context) (error, interface{}) {
-	if typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-		dst := reflect.New(typ).Elem()
-		err := c.ShouldBindBodyWith(dst.Addr().Interface(), binding.JSON)
-		return err, dst.Addr().Interface()
-	} else {
-		dst := reflect.New(typ).Elem()
-		err := c.ShouldBindBodyWith(dst.Addr().Interface(), binding.JSON)
-		return err, dst.Interface()
-	}
-}
-
 func bindParam(typ reflect.Type, c *gin.Context) (error, interface{}) {
-	bind := func(pObj interface{}) error {
+	shouldBind := func(pObj interface{}) error {
 		switch pObj.(type) {
 		case IBindHeader:
 			return c.ShouldBindHeader(pObj)
 		case IBindQuery:
 			return c.ShouldBindQuery(pObj)
+		case IBindBody:
+			return c.ShouldBindBodyWith(pObj, binding.JSON)
+		case IBindCookie:
+			return cookieBinding.Bind(typ, c.Request, pObj)
 		default:
 			if c.Request.Method == http.MethodGet {
 				return c.ShouldBindQuery(pObj)
@@ -159,11 +91,11 @@ func bindParam(typ reflect.Type, c *gin.Context) (error, interface{}) {
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 		dst := reflect.New(typ).Elem()
-		err := bind(dst.Addr().Interface())
+		err := shouldBind(dst.Addr().Interface())
 		return err, dst.Addr().Interface()
 	} else {
 		dst := reflect.New(typ).Elem()
-		err := bind(dst.Addr().Interface())
+		err := shouldBind(dst.Addr().Interface())
 		return err, dst.Interface()
 	}
 }
