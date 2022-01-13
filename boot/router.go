@@ -20,6 +20,7 @@ var (
 	PtrRequestType    = reflect.TypeOf(&http.Request{})
 	ResponseType      = reflect.TypeOf(http.Response{})
 	PtrResponseType   = reflect.TypeOf(&http.Response{})
+	ginFunType        = reflect.TypeOf(func(c *gin.Context) {})
 )
 
 type WebRouter struct {
@@ -93,7 +94,6 @@ func router(router *gin.RouterGroup, method, relativePath string, webHandlers ..
 
 func baseFunc(c *gin.Context, webHandler WebHandlerFunc, lastHandler bool) {
 	funType := reflect.TypeOf(webHandler)
-	ginFunType := reflect.TypeOf(func(c *gin.Context) {})
 	if funType == ginFunType {
 		webHandler.(func(*gin.Context))(c)
 	} else {

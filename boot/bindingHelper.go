@@ -9,6 +9,7 @@ import (
 	"reflect"
 )
 
+// IBindBody
 type IBindBody interface {
 	getBindBodyValue() string
 }
