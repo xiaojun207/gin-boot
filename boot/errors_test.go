@@ -6,7 +6,7 @@ import (
 )
 
 func TestErrorToString(t *testing.T) {
-	e := NewWebError("100100", "s")
+	e := NewWebError(CodeServerError, "s")
 	code, msg := errorToString(e)
 	fmt.Println("code:", code, "msg:", msg)
 }

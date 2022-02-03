@@ -13,11 +13,11 @@ func errorToString(r interface{}) (code string, msg string) {
 	case WebError:
 		return v.Code(), v.Msg()
 	case validator.ValidationErrors:
-		return "100101", v.Error()
+		return CodeFieldVerificationError, v.Error()
 	case error:
-		return "100103", v.Error()
+		return CodeServerError, v.Error()
 	default:
-		return "100103", r.(string)
+		return CodeServerError, r.(string)
 	}
 }
 

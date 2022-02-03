@@ -109,7 +109,7 @@ func baseFunc(c *gin.Context, webHandler WebHandlerFunc, lastHandler bool) {
 			} else if rType == ApiRespType {
 				c.JSON(http.StatusOK, r)
 			} else if rType == ErrorType {
-				Resp(c, "100100", "系统错误", r)
+				Resp(c, CodeServerError, "服务验证错误", r)
 			} else {
 				RespSuccess(c, r)
 			}

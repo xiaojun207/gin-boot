@@ -104,6 +104,8 @@ var webRouter = func(router *boot.WebRouter) {
 
 func CustomCode() {
 	boot.CodeSuccess = "100200"
+	boot.CodeInvalidRequest = "100104"
+	boot.CodeServerError = "100100" // 服务错误
 }
 
 func main() {
