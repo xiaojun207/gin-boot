@@ -1,5 +1,7 @@
 package boot
 
+import "log"
+
 type WebError interface {
 	Msg() string
 	Code() string
@@ -25,4 +27,8 @@ func (e *webError) Code() string {
 
 func (e *webError) Error() string {
 	return e.code + ":" + e.Msg()
+}
+
+func Panic(v ...interface{}) {
+	log.Panic(v)
 }

@@ -25,7 +25,7 @@ func Resp(c *gin.Context, code string, msg string, data interface{}) {
 
 func RespSuccess(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{
-		"code": "100200",
+		"code": CodeSuccess,
 		"msg":  "成功",
 		"data": data,
 	})

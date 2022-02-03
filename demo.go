@@ -33,7 +33,7 @@ func TestPost1Handler(c *gin.Context, req *Foo, page Page, header QueryHeader) b
 	log.Println("TestPost1Handler.req:", req.Username, ",Password:", req.Password)
 	log.Println("TestPost1Handler.page.PageNum:", page.PageNum, ",PageSize:", page.PageSize)
 	log.Println("TestPost1Handler.Authorization:", header.Authorization)
-	return boot.ApiResp{Code: "100200", Msg: "Success", Data: "TestData: " + req.Username}
+	return boot.ApiResp{Code: boot.CodeSuccess, Msg: "Success", Data: "TestData: " + req.Username}
 }
 
 // /testGetEmpty
@@ -102,6 +102,11 @@ var webRouter = func(router *boot.WebRouter) {
 	apiRouter.GET("/test", TestPost2Handler)
 }
 
+func CustomCode() {
+	boot.CodeSuccess = "100200"
+}
+
 func main() {
+	CustomCode()
 	boot.Start("8088", "/", webRouter)
 }
