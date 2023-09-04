@@ -24,6 +24,7 @@ type QueryHeader struct {
 	Authorization string `header:"authorization"`
 }
 
+// TestPost1Handler
 // /testPost
 // 入参可以自动填充到结构体,如果是POST，则将http body数据填充到结构体；
 // 返回数据，可以是任意数据类型。如果数据不是boot.ApiResp，则返回数据会被包装为boot.ApiResp的json数据；<br>
@@ -36,12 +37,16 @@ func TestPost1Handler(c *gin.Context, req *Foo, page Page, header QueryHeader) b
 	return boot.ApiResp{Code: boot.CodeSuccess, Msg: "Success", Data: "TestData: " + req.Username}
 }
 
-// /testGetEmpty
-// 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
+// TestGetEmptyHandler
+/*
+/testGetEmpty
+空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
+*/
 func TestGetEmptyHandler(c *gin.Context, req *Foo) {
 	log.Println("TestGetEmptyHandler.req.username:", req.Username, ",password:", req.Password)
 }
 
+// TestGetHandler
 // 空返回值包装测试，返回：{"code":"100200","data":null,"msg":"成功"}
 func TestGetHandler(c *gin.Context, page Page, header QueryHeader) {
 	log.Println("TestGetHandler.page.PageNum:", page.PageNum, ",PageSize:", page.PageSize)
@@ -49,12 +54,14 @@ func TestGetHandler(c *gin.Context, page Page, header QueryHeader) {
 	log.Println("TestGetHandler")
 }
 
+// TestPost2Handler
 // 异常全局处理测试，返回：{"code":"100101","data":null,"msg":"TestPost2Handler.TestError"}
 func TestPost2Handler(c *gin.Context, req *Foo) {
 	log.Println("TestPost2Handler.req.username:", req.Username, ",password:", req.Password)
 	panic(errors.New("TestPost2Handler.TestError"))
 }
 
+// TestGet1Handler
 // /testGet?username=admin12&password=1234&page_num=1&page_size=10
 // url 中的参数，需要用tag 'form' 标识
 // 也可以使用gin方法, GET类型的请求，query参数也可以自动装填到结构体

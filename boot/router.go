@@ -10,7 +10,7 @@ import (
 type WebHandlerFunc interface{}
 
 var (
-	WebErrorType      = reflect.TypeOf(NewWebError(CodeSuccess, ""))
+	WebErrorType      = reflect.TypeOf(NewWebError("", ""))
 	ApiRespType       = reflect.TypeOf(ApiResp{})
 	ErrorType         = reflect.TypeOf(errors.New(""))
 	GinContextType    = reflect.TypeOf(gin.Context{})
