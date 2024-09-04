@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/xiaojun207/gin-boot/boot"
+	"github.com/xiaojun207/gin-boot/i18n"
+	"golang.org/x/text/language"
 	"log"
 	"net/http"
 )
@@ -93,6 +95,12 @@ func AuthInterceptor(c *gin.Context, header http.Header) {
 
 var webRouter = func(router *boot.WebRouter) {
 	//router.Use(AuthInterceptor)
+	bundle := i18n.NewBundle(
+		language.Chinese, //默认中文
+		"locals/message.zh-CN.toml",
+		"locals/message.en-US.toml",
+	)
+	router.Use(i18n.Serve(bundle))
 
 	// 静态资源
 	router.StaticFile("/", "./views/index.html")
