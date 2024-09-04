@@ -1,8 +1,6 @@
 module github.com/xiaojun207/gin-boot
 
-go 1.21.0
-
-toolchain go1.23.0
+go 1.23.0
 
 require (
 	github.com/BurntSushi/toml v1.4.0
